@@ -1,3 +1,7 @@
-# Local ingest needs only stdlib.
-# boto3 is required when BUCKET is set (S3 writes / Lambda packaging).
+# Phase 1 - ingest
+# Local stdlib-only; boto3 needed when BUCKET is set (S3 / Lambda).
 boto3>=1.34
+
+# Phase 2 - silver
+pandas>=2.0
+pyarrow>=14.0

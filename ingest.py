@@ -19,27 +19,41 @@ USER_AGENT = os.environ["SEC_USER_AGENT"]  # SEC blocks requests without identif
 BUCKET = os.environ.get("BUCKET")
 
 DCF_CONCEPTS = [
-    # Income statement
-    "Revenues",
+    # Revenue (post-ASC 606 standard + pre-606 fallback)
     "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "Revenues",
+    # COGS / margin
     "CostOfGoodsAndServicesSold",
+    "CostOfRevenue",
     "GrossProfit",
+    # Opex + income
     "SellingGeneralAndAdministrativeExpense",
     "OperatingIncomeLoss",
     "IncomeTaxExpenseBenefit",
     "NetIncomeLoss",
-    # Cash flow
+    # D&A (variants - companies use one or the other)
     "DepreciationDepletionAndAmortization",
     "DepreciationAndAmortization",
-    "PaymentsToAcquirePropertyPlantAndEquipment",  # capex
+    # Capex + non-cash
+    "PaymentsToAcquirePropertyPlantAndEquipment",
     "ShareBasedCompensation",
     "NetCashProvidedByUsedInOperatingActivities",
-    # Balance sheet (working capital + capital structure)
+    # Working capital
+    "ReceivablesNetCurrent",
     "AccountsReceivableNetCurrent",
     "InventoryNet",
     "AccountsPayableCurrent",
+    # Capital structure
     "PropertyPlantAndEquipmentNet",
     "LongTermDebt",
+    "LongTermDebtNoncurrent",
+    "ShortTermBorrowings",
+    # Operating leases - capitalized debt-equivalent under ASC 842
+    "OperatingLeaseLiability",
+    "OperatingLeaseLiabilityCurrent",
+    "OperatingLeaseLiabilityNoncurrent",
+    "OperatingLeaseRightOfUseAsset",
+    # Shares
     "CommonStockSharesOutstanding",
 ]
 
