@@ -11,3 +11,6 @@ scipy>=1.11
 
 # Live market data for DCF anchor price
 yfinance>=0.2.30
+
+# Phase 5 - visualization
+matplotlib>=3.7
