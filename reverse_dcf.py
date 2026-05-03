@@ -49,10 +49,12 @@ def main():
     df_silver = m.load_silver()
     last_fy = df_silver.index.max()
     last_rev = df_silver.loc[last_fy, "revenue"]
-    shares_out = df_silver.loc[last_fy, "shares_out"]
+
+    md = m.get_market_data()
+    price = md["price"]
+    shares_out = md["shares"] or df_silver.loc[last_fy, "shares_out"]
 
     wacc = m.calc_wacc()
-    price = m.CURRENT_PRICE
 
     g = implied_growth(price, last_rev, last_fy, wacc, shares_out)
     om = implied_margin(price, last_rev, last_fy, wacc, shares_out)

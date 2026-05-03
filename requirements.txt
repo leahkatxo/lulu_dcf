@@ -8,3 +8,6 @@ pyarrow>=14.0
 
 # Phase 6 - reverse DCF (root-finding)
 scipy>=1.11
+
+# Live market data for DCF anchor price
+yfinance>=0.2.30

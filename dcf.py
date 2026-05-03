@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+import yfinance as yf
 
 TICKER = "LULU"
 SILVER_DIR = Path("data/silver/sec") / TICKER
@@ -46,8 +47,8 @@ TERMINAL_GROWTH = 0.025
 CASH_AND_EQUIVALENTS = 2.0e9    # LULU runs ~$1.6-2.4B
 TRADITIONAL_DEBT     = 0        # LULU is essentially debt-free
 
-# Reverse-DCF cross-check (manual snapshot - update before publishing)
-CURRENT_PRICE = 280.0
+# Set to a number to bypass yfinance and use a fixed price
+PRICE_OVERRIDE = None
 
 
 def load_silver():
@@ -55,6 +56,18 @@ def load_silver():
     if not files:
         raise FileNotFoundError("No silver files. Run silver.py first.")
     return pd.read_parquet(files[-1])
+
+
+def get_market_data():
+    """Live LULU price + diluted shares + market cap. Override via PRICE_OVERRIDE."""
+    if PRICE_OVERRIDE is not None:
+        return {"price": float(PRICE_OVERRIDE), "shares": None, "market_cap": None}
+    info = yf.Ticker(TICKER).fast_info
+    return {
+        "price": float(info.last_price),
+        "shares": int(info.shares),
+        "market_cap": float(info.market_cap),
+    }
 
 
 def calc_wacc():
@@ -140,10 +153,10 @@ def main():
     df_silver = load_silver()
     last_fy = df_silver.index.max()
     last_rev = df_silver.loc[last_fy, "revenue"]
-    shares_out = df_silver.loc[last_fy, "shares_out"]
-    if pd.isna(shares_out):
-        shares_out = 121e6  # fallback
-        print("  warning: shares_out missing in silver, using 121M fallback")
+
+    md = get_market_data()
+    price = md["price"]
+    shares_out = md["shares"] or df_silver.loc[last_fy, "shares_out"]
 
     wacc = calc_wacc()
     df_proj = project(last_rev, last_fy, wacc)
@@ -178,8 +191,8 @@ def main():
     print(f"Equity value:                  ${val['equity_value']/1e9:>7.2f}B")
 
     print(f"\nIntrinsic value / share:       ${val['per_share']:>7.2f}")
-    print(f"Current price:                 ${CURRENT_PRICE:>7.2f}")
-    upside = (val['per_share'] / CURRENT_PRICE - 1) * 100
+    print(f"Current price (live):          ${price:>7.2f}")
+    upside = (val['per_share'] / price - 1) * 100
     print(f"Implied upside / (downside):    {upside:>+6.1f}%")
 
     print(f"\n=== Sensitivity: $ per share ===\n")
@@ -202,7 +215,7 @@ def main():
         "terminal_growth": TERMINAL_GROWTH,
         "shares_out": float(shares_out),
         **{k: float(v) for k, v in val.items()},
-        "current_price": CURRENT_PRICE,
+        "current_price": price,
         "upside_pct": upside / 100,
     }
     (GOLD_DIR / f"valuation_{today}.json").write_text(json.dumps(summary, indent=2))
