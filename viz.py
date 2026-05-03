@@ -107,7 +107,9 @@ def chart_sensitivity(df_proj, shares_out, price, today):
 
 
 def chart_revenue_projection(df_silver, df_proj, today):
-    hist = df_silver["revenue"].dropna() / 1e9
+    # Pre-2020 XBRL fiscal-year tagging is unreliable for LULU; show post-COVID era
+    clean = df_silver[df_silver.index >= 2020]
+    hist = clean["revenue"].dropna() / 1e9
     proj = df_proj["rev"] / 1e9
 
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -131,7 +133,7 @@ def chart_revenue_projection(df_silver, df_proj, today):
 
     ax.set_xlabel("Fiscal year")
     ax.set_ylabel("Revenue ($B)")
-    ax.set_title("LULU revenue: 16 years of history + 5-year base case", loc="left")
+    ax.set_title("LULU revenue: post-COVID era history + 5-year base case", loc="left")
     ax.grid(axis="y", linestyle=":", alpha=0.4)
     ax.legend(loc="upper left", frameon=False)
 
