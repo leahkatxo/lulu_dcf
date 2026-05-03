@@ -1,0 +1,3 @@
+# Local ingest needs only stdlib.
+# boto3 is required when BUCKET is set (S3 writes / Lambda packaging).
+boto3>=1.34
