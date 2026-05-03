@@ -63,10 +63,12 @@ def calc_wacc():
     return cost_of_equity
 
 
-def project(last_revenue, last_fy, wacc):
+def project(last_revenue, last_fy, wacc, growth_path=None, margin_path=None):
+    growth_path = growth_path if growth_path is not None else REV_GROWTH_PATH
+    margin_path = margin_path if margin_path is not None else OP_MARGIN_PATH
     rows = []
     rev = last_revenue
-    for i, (g, op_m) in enumerate(zip(REV_GROWTH_PATH, OP_MARGIN_PATH), 1):
+    for i, (g, op_m) in enumerate(zip(growth_path, margin_path), 1):
         prev_rev = rev
         rev = rev * (1 + g)
         op_inc     = rev * op_m
