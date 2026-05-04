@@ -45,6 +45,8 @@ python dcf.py           # phase 4 + 5 - base-case valuation, charts, sensitivity
 python reverse_dcf.py   # phase 6 - what does the market price imply?
 python scenarios.py     # phase 7 - bear / base / bull comparison
 python viz.py           # rebuild all charts
+
+python view_data.py     # inspect any layer; --help for options
 ```
 
 ## Headline output (FY2025 anchor, May 2026 spot)
